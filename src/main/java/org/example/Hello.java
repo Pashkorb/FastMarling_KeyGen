@@ -509,6 +509,9 @@ public class Hello extends JFrame {
         String serial = values.get("SerialNumber");
         if (serial != null) {
             serial = serial.trim();
+            if (!serial.isEmpty()) {
+                serial = serial.toUpperCase(Locale.ROOT);
+            }
         }
         if (serial == null || serial.isBlank()) {
             throw new DeviceInfoException("Невозможно определить аппаратный серийный номер флешки.");
