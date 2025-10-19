@@ -10,7 +10,8 @@ public record LicenseRequest(
         LocalDate expirationDate,
         SoftwareVersion version,
         List<FeatureFlag> features,
-        String company
+        String company,
+        String deviceFingerprint
 ) {
     public LicenseRequest {
         if (expirationDate == null) {
@@ -22,5 +23,6 @@ public record LicenseRequest(
 
         features = (features == null) ? List.of() : List.copyOf(features);
         company = (company != null && !company.isBlank()) ? company.trim() : null;
+        deviceFingerprint = (deviceFingerprint != null && !deviceFingerprint.isBlank()) ? deviceFingerprint.trim() : null;
     }
 }

@@ -40,7 +40,7 @@ public class LicenseManager {
 
     // Генерация лицензионного ключа
     public static String generateLicenseKey(LocalDate expirationDate) {
-        return generateLicenseKey(new LicenseRequest(expirationDate, SoftwareVersion.V1_01, List.of(), null));
+        return generateLicenseKey(new LicenseRequest(expirationDate, SoftwareVersion.V1_01, List.of(), null, null));
     }
 
     public static String generateLicenseKey(LicenseRequest request) {
@@ -75,6 +75,10 @@ public class LicenseManager {
                         .toArray(String[]::new);
                 builder.withArrayClaim("features", features);
             }
+        }
+
+        if (request.deviceFingerprint() != null) {
+            builder.withClaim("device_fingerprint", request.deviceFingerprint());
         }
 
         String licenseKey = builder.sign(JWT_ALGORITHM);
