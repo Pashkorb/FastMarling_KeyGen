@@ -1,0 +1,322 @@
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	JRE
+Check launcher:	C:\Users\Asus\Desktop\NewSender\JRE\bin\javaw.exe (not found)
+Error msg:	This application requires a Java Runtime Environment.
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	JRE
+Check launcher:	C:\Users\Asus\Desktop\NewSender\JRE\bin\javaw.exe (not found)
+Error msg:	This application requires a Java Runtime Environment.
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	JRE
+Check launcher:	C:\Users\Asus\Desktop\NewSender\JRE\bin\javaw.exe (not found)
+Error msg:	This application requires a Java Runtime Environment.
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+Substitute:	JAVA_HOME = C:\Program Files\Java\latest\jdk-21
+Substitute:	PATH = C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Users\Asus\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\PyCharm 2022.3.1\bin;;C:\Program Files\JetBrains\PyCharm Community Edition 2022.3.1\bin;;C:\Users\Asus\.dotnet\tools;C:\Program Files (x86)\apache-maven-3.9.9\bin;;C:\Program Files\Java\latest\jdk-21\bin
+JRE paths:	C:\Program Files\Java\latest\jdk-21;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Users\Asus\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\PyCharm 2022.3.1\bin;;C:\Program Files\JetBrains\PyCharm Community Edition 2022.3.1\bin;;C:\Users\Asus\.dotnet\tools;C:\Program Files (x86)\apache-maven-3.9.9\bin;;C:\Program Files\Java\latest\jdk-21\bin
+Check launcher:	C:\Program Files\Java\latest\jdk-21\bin\javaw.exe (OK)
+Version string: 1.021.000 / 64-Bit (OK)
+Launcher:	C:\Program Files\Java\latest\jdk-21\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+Substitute:	JAVA_HOME = C:\Program Files\Java\latest\jdk-21
+Substitute:	PATH = C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Users\Asus\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\PyCharm 2022.3.1\bin;;C:\Program Files\JetBrains\PyCharm Community Edition 2022.3.1\bin;;C:\Users\Asus\.dotnet\tools;C:\Program Files (x86)\apache-maven-3.9.9\bin;;C:\Program Files\Java\latest\jdk-21\bin
+JRE paths:	C:\Program Files\Java\latest\jdk-21;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Users\Asus\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\PyCharm 2022.3.1\bin;;C:\Program Files\JetBrains\PyCharm Community Edition 2022.3.1\bin;;C:\Users\Asus\.dotnet\tools;C:\Program Files (x86)\apache-maven-3.9.9\bin;;C:\Program Files\Java\latest\jdk-21\bin
+Check launcher:	C:\Program Files\Java\latest\jdk-21\bin\javaw.exe (OK)
+Version string: 1.021.000 / 64-Bit (OK)
+Launcher:	C:\Program Files\Java\latest\jdk-21\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+Substitute:	JAVA_HOME = C:\Program Files\Java\jdk-21
+Substitute:	PATH = C:\Program Files\Java\GraalVM\bin;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Program Files\Java\jdk-23\bin;C:\Program Files\Java\jdk-21\bin;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\.dotnet\tools\.store\wix;C:\Program Files (x86)\wix;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Program Files\Java\jdk-23\bin;C:\Program Files\Java\jdk-21\bin;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\;C:\Program Files (x86)\Jar2Exe Wizard\;C:\Program Files\Java\GraalVM\bin
+JRE paths:	C:\Program Files\Java\jdk-21;C:\Program Files\Java\GraalVM\bin;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Program Files\Java\jdk-23\bin;C:\Program Files\Java\jdk-21\bin;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\.dotnet\tools\.store\wix;C:\Program Files (x86)\wix;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Program Files\Java\jdk-23\bin;C:\Program Files\Java\jdk-21\bin;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\;C:\Program Files (x86)\Jar2Exe Wizard\;C:\Program Files\Java\GraalVM\bin
+Check launcher:	C:\Program Files\Java\jdk-21\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Java\GraalVM\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Program Files\Java\GraalVM\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+Substitute:	JAVA_HOME = C:\Program Files\Java\jdk-21
+Substitute:	PATH = C:\Program Files\Java\GraalVM\bin;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Program Files\Java\jdk-23\bin;C:\Program Files\Java\jdk-21\bin;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\.dotnet\tools\.store\wix;C:\Program Files (x86)\wix;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Program Files\Java\jdk-23\bin;C:\Program Files\Java\jdk-21\bin;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\;C:\Program Files (x86)\Jar2Exe Wizard\;C:\Program Files\Java\GraalVM\bin
+JRE paths:	C:\Program Files\Java\jdk-21;C:\Program Files\Java\GraalVM\bin;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Program Files\Java\jdk-23\bin;C:\Program Files\Java\jdk-21\bin;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\.dotnet\tools\.store\wix;C:\Program Files (x86)\wix;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Users\Asus\AppData\Local\Programs\Python\Python310;C:\Users\Asus\AppData\Local\Programs\Python\Python310\Scripts;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\apache-maven-3.9.9\bin;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\Program Files (x86)\National Instruments\Shared\LabVIEW CLI;C:\Program Files\PuTTY\;C:\Program Files\WireGuard\;C:\Program Files\Java\jdk-23\bin;C:\Program Files\Java\jdk-21\bin;C:\Users\Asus\.dotnet\tools;C:\Users\Asus\;C:\Program Files (x86)\Jar2Exe Wizard\;C:\Program Files\Java\GraalVM\bin
+Check launcher:	C:\Program Files\Java\jdk-21\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Java\GraalVM\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Program Files\Java\GraalVM\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
+
+
+Version:	3.50
+CmdLine:	C:\Users\Asus\Desktop\NewSender\FastMarking.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Asus\Desktop\NewSender\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	custom-jre
+Check launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe (OK)
+Version string: 1.023.000_002 / 64-Bit (OK)
+Launcher:	C:\Users\Asus\Desktop\NewSender\custom-jre\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Asus\Desktop\NewSender\FastMarking.exe"
+Args length:	54/32768 chars
+Exit code:	0
