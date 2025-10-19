@@ -25,4 +25,8 @@ public enum SoftwareVersion {
     public String getCode() {
         return name().substring(1).replace('_', '.');
     }
+
+    public boolean isV2() {
+        return this == V2_01 || this == V2_11;
+    }
 }

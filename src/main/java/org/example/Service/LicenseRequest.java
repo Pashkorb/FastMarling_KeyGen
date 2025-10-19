@@ -21,6 +21,6 @@ public record LicenseRequest(
         }
 
         features = (features == null) ? List.of() : List.copyOf(features);
-        company = (company != null && !company.isBlank()) ? company : null;
+        company = (company != null && !company.isBlank()) ? company.trim() : null;
     }
 }
