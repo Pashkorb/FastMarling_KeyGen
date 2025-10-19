@@ -3,6 +3,7 @@ package org.example.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 
@@ -19,13 +20,19 @@ import java.nio.file.Paths;
 import java.security.Key;
 import java.time.LocalDate;
 import java.util.Base64;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class LicenseManager {
     // Секретный ключ для JWT (HMAC-SHA256)
     private static final String JWT_SECRET_KEY = "zAJcJOgo0mBAQEzwWXHDxyahBqn0uLja++zpUdbzC1YHZXMZyZcMWa0SCttW19xs";
     private static final Algorithm JWT_ALGORITHM = Algorithm.HMAC256(JWT_SECRET_KEY);
+
+    private static final String DEFAULT_COMPANY = "DefaultCompany";
 
     // Секретный ключ для AES-шифрования (должен быть 16, 24 или 32 байта)
     private static final String AES_SECRET_KEY = "16byteAESkey1234"; // 16 байт
@@ -44,19 +51,34 @@ public class LicenseManager {
                 .withClaim("code", code)
                 .withClaim("version", request.version().getCode());
 
-        if (request.company() != null) {
-            builder.withClaim("company", request.company());
-        }
+        EnumSet<FeatureFlag> enabledFlags = request.features().isEmpty()
+                ? EnumSet.noneOf(FeatureFlag.class)
+                : EnumSet.copyOf(request.features());
 
-        if (!request.features().isEmpty()) {
-            String[] features = request.features().stream()
-                    .map(FeatureFlag::name)
-                    .toArray(String[]::new);
-            builder.withArrayClaim("features", features);
+        if (request.version().isV2()) {
+            String company = request.company() != null ? request.company() : DEFAULT_COMPANY;
+            builder.withClaim("company", company);
+
+            Map<String, Integer> featureStates = new LinkedHashMap<>();
+            for (FeatureFlag flag : FeatureFlag.values()) {
+                featureStates.put(flag.name(), enabledFlags.contains(flag) ? 1 : 0);
+            }
+            builder.withClaim("features", featureStates);
+        } else {
+            if (request.company() != null) {
+                builder.withClaim("company", request.company());
+            }
+
+            if (!enabledFlags.isEmpty()) {
+                String[] features = enabledFlags.stream()
+                        .map(FeatureFlag::name)
+                        .toArray(String[]::new);
+                builder.withArrayClaim("features", features);
+            }
         }
 
         String licenseKey = builder.sign(JWT_ALGORITHM);
-        System.out.println("[INFO] Лицензионный ключ успешно сгенерирован: " + licenseKey);
+        System.out.println("[INFO] Лицензионный ключ успешно сгенерирован. Код: " + code);
         return licenseKey;
     }
 
@@ -69,6 +91,93 @@ public class LicenseManager {
             return null;
         }
     }
+
+    public static EnumMap<FeatureFlag, Boolean> extractFeatureStates(String licenseKey) {
+        try {
+            DecodedJWT jwt = JWT.decode(licenseKey);
+            return extractFeatureStates(jwt);
+        } catch (Exception e) {
+            return initializeFeatureStateMap();
+        }
+    }
+
+    public static EnumMap<FeatureFlag, Boolean> extractFeatureStates(DecodedJWT jwt) {
+        if (jwt == null) {
+            return initializeFeatureStateMap();
+        }
+
+        EnumMap<FeatureFlag, Boolean> featureStates = initializeFeatureStateMap();
+        Claim claim = jwt.getClaim("features");
+        if (claim == null || claim.isNull()) {
+            return featureStates;
+        }
+
+        Map<String, Object> map = null;
+        try {
+            map = claim.asMap();
+        } catch (Exception ignored) {
+        }
+
+        if (map != null) {
+            map.forEach((key, value) -> {
+                try {
+                    FeatureFlag flag = FeatureFlag.valueOf(key);
+                    featureStates.put(flag, interpretFeatureValue(value));
+                } catch (IllegalArgumentException ignored) {
+                    // Пропускаем неизвестные флаги
+                }
+            });
+            return featureStates;
+        }
+
+        List<String> featureList = null;
+        try {
+            featureList = claim.asList(String.class);
+        } catch (Exception ignored) {
+        }
+
+        if (featureList != null) {
+            for (String featureName : featureList) {
+                try {
+                    FeatureFlag flag = FeatureFlag.valueOf(featureName);
+                    featureStates.put(flag, true);
+                } catch (IllegalArgumentException ignored) {
+                    // Пропускаем неизвестные флаги
+                }
+            }
+        }
+
+        return featureStates;
+    }
+
+    private static EnumMap<FeatureFlag, Boolean> initializeFeatureStateMap() {
+        EnumMap<FeatureFlag, Boolean> map = new EnumMap<>(FeatureFlag.class);
+        for (FeatureFlag flag : FeatureFlag.values()) {
+            map.put(flag, false);
+        }
+        return map;
+    }
+
+    private static boolean interpretFeatureValue(Object value) {
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue() != 0;
+        }
+        if (value instanceof String) {
+            String normalized = ((String) value).trim();
+            if (normalized.equalsIgnoreCase("true") || normalized.equals("1")) {
+                return true;
+            }
+            if (normalized.equalsIgnoreCase("false") || normalized.equals("0")) {
+                return false;
+            }
+            return Boolean.parseBoolean(normalized);
+        }
+        return false;
+    }
+
     private static String generateRandomCode(int length) {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder sb = new StringBuilder();
