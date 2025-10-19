@@ -22,12 +22,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystemException;
+import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +49,7 @@ public class Hello extends JFrame {
     private JPanel mainPanel;
 
     private final EnumMap<SoftwareVersion, LegacyView> legacyViews = new EnumMap<>(SoftwareVersion.class);
+    private final EnumSet<SoftwareVersion> readmeWarningShown = EnumSet.noneOf(SoftwareVersion.class);
     private FeatureVersionView v201View;
     private ModernVersionView v211View;
     private final JTabbedPane tabbedPane;
@@ -97,6 +103,24 @@ public class Hello extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(new JLabel("О версии:"), gbc);
+
+        view.readmeArea = createReadOnlyArea();
+        view.readmeArea.setRows(10);
+        view.readmeArea.setText("Загрузка...");
+        gbc.gridy = 1;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(new JScrollPane(view.readmeArea), gbc);
+
+        gbc.gridwidth = 1;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         panel.add(new JLabel("Дата окончания (ГГГГ-ММ-ДД):"), gbc);
 
         view.expirationField = createMaskedDateField();
@@ -104,7 +128,7 @@ public class Hello extends JFrame {
         panel.add(view.expirationField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 3;
         panel.add(new JLabel("Номер лицензии:"), gbc);
 
         view.licenseNumberField = createReadOnlyField();
@@ -112,35 +136,23 @@ public class Hello extends JFrame {
         panel.add(view.licenseNumberField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         panel.add(new JLabel("Лицензионный ключ:"), gbc);
 
         view.licenseArea = createReadOnlyArea();
         attachCopyToClipboard(view.licenseArea);
-        gbc.gridy = 3;
-        gbc.weightx = 1;
+        gbc.gridy = 5;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         panel.add(new JScrollPane(view.licenseArea), gbc);
 
         view.generateButton = new JButton("Сгенерировать");
         view.generateButton.addActionListener(e -> generateLicenseForLegacy(version));
-        gbc.gridy = 4;
+        gbc.gridy = 6;
         gbc.weighty = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(view.generateButton, gbc);
-
-        gbc.gridy = 5;
-        panel.add(new JLabel("Информация о версии:"), gbc);
-
-        view.readmeArea = createReadOnlyArea();
-        view.readmeArea.setRows(10);
-        view.readmeArea.setText("Загрузка...");
-        gbc.gridy = 6;
-        gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        panel.add(new JScrollPane(view.readmeArea), gbc);
 
         view.panel = panel;
         return view;
@@ -154,6 +166,23 @@ public class Hello extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(new JLabel("О версии:"), gbc);
+
+        view.readmeArea = createReadOnlyArea();
+        view.readmeArea.setRows(10);
+        view.readmeArea.setText("Загрузка...");
+        gbc.gridy = 1;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(new JScrollPane(view.readmeArea), gbc);
+
+        gbc.gridwidth = 1;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridy = 2;
         panel.add(new JLabel("Дата окончания (ГГГГ-ММ-ДД):"), gbc);
 
         view.expirationField = createMaskedDateField();
@@ -161,7 +190,7 @@ public class Hello extends JFrame {
         panel.add(view.expirationField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 3;
         panel.add(new JLabel("Номер лицензии:"), gbc);
 
         view.licenseNumberField = createReadOnlyField();
@@ -169,19 +198,27 @@ public class Hello extends JFrame {
         panel.add(view.licenseNumberField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 4;
+        panel.add(new JLabel("Компания:"), gbc);
+
+        view.companyField = new JTextField(20);
+        gbc.gridx = 1;
+        panel.add(view.companyField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         panel.add(new JLabel("Лицензионный ключ:"), gbc);
 
         view.licenseArea = createReadOnlyArea();
         attachCopyToClipboard(view.licenseArea);
-        gbc.gridy = 3;
-        gbc.weightx = 1;
+        gbc.gridy = 6;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         panel.add(new JScrollPane(view.licenseArea), gbc);
 
-        gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridy = 7;
         gbc.weighty = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(new JLabel("Функции лицензии:"), gbc);
@@ -189,20 +226,23 @@ public class Hello extends JFrame {
         view.checkBoxes = createFeatureCheckboxes();
         JPanel featurePanel = new JPanel(new GridLayout(0, 2, 5, 5));
         view.checkBoxes.forEach((flag, box) -> featurePanel.add(box));
-        gbc.gridy = 5;
+        gbc.gridx = 0;
+        gbc.gridy = 8;
         gbc.fill = GridBagConstraints.BOTH;
         panel.add(featurePanel, gbc);
 
         view.selectAllButton = new JButton("Выбрать все");
         view.selectAllButton.addActionListener(e -> toggleSelectAll(view.checkBoxes));
-        gbc.gridy = 6;
+        gbc.gridx = 0;
+        gbc.gridy = 9;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
         panel.add(view.selectAllButton, gbc);
 
         view.generateButton = new JButton("Сгенерировать");
         view.generateButton.addActionListener(e -> generateLicenseForFeatureVersion(version));
-        gbc.gridy = 7;
+        gbc.gridx = 0;
+        gbc.gridy = 10;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(view.generateButton, gbc);
 
@@ -218,6 +258,24 @@ public class Hello extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(new JLabel("О версии:"), gbc);
+
+        view.readmeArea = createReadOnlyArea();
+        view.readmeArea.setRows(10);
+        view.readmeArea.setText("Загрузка...");
+        gbc.gridy = 1;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(new JScrollPane(view.readmeArea), gbc);
+
+        gbc.gridwidth = 1;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         panel.add(new JLabel("Дата окончания (ГГГГ-ММ-ДД):"), gbc);
 
         view.expirationField = createMaskedDateField();
@@ -225,7 +283,7 @@ public class Hello extends JFrame {
         panel.add(view.expirationField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 3;
         panel.add(new JLabel("Номер лицензии:"), gbc);
 
         view.licenseNumberField = createReadOnlyField();
@@ -233,42 +291,53 @@ public class Hello extends JFrame {
         panel.add(view.licenseNumberField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 4;
+        panel.add(new JLabel("Компания:"), gbc);
+
+        view.companyField = new JTextField(20);
+        gbc.gridx = 1;
+        panel.add(view.companyField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         panel.add(new JLabel("Функции лицензии:"), gbc);
 
         view.checkBoxes = createFeatureCheckboxes();
         JPanel featurePanel = new JPanel(new GridLayout(0, 2, 5, 5));
         view.checkBoxes.forEach((flag, box) -> featurePanel.add(box));
-        gbc.gridy = 3;
-        gbc.weightx = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 6;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         panel.add(featurePanel, gbc);
 
         view.selectAllButton = new JButton("Выбрать все");
         view.selectAllButton.addActionListener(e -> toggleSelectAll(view.checkBoxes));
-        gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridy = 7;
         gbc.weighty = 0;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
         panel.add(view.selectAllButton, gbc);
 
-        gbc.gridy = 5;
+        gbc.gridx = 0;
+        gbc.gridy = 8;
+        gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(new JLabel("Флеш-накопитель:"), gbc);
 
         view.driveComboBox = new JComboBox<>();
         view.driveComboBox.setPrototypeDisplayValue(new DriveItem(null, "Съемный диск (X:)"));
-        gbc.gridy = 6;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 9;
         panel.add(view.driveComboBox, gbc);
 
         view.writeButton = new JButton("Записать лицензию");
         view.writeButton.addActionListener((ActionEvent e) -> generateAndWriteLicense(version));
         view.writeButton.setEnabled(false);
-        gbc.gridy = 7;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 10;
         panel.add(view.writeButton, gbc);
 
         view.panel = panel;
@@ -276,9 +345,7 @@ public class Hello extends JFrame {
     }
 
     private void onVersionSelected(SoftwareVersion version) {
-        if (legacyViews.containsKey(version)) {
-            loadReadme(version);
-        }
+        loadReadme(version);
         if (version == SoftwareVersion.V2_11) {
             updateDriveList();
         }
@@ -295,6 +362,10 @@ public class Hello extends JFrame {
             view.licenseNumberField.setText(Objects.requireNonNullElse(LicenseManager.getLicenseCode(licenseKey), ""));
             view.licenseArea.setText(licenseKey);
             view.licenseArea.setCaretPosition(0);
+            Path targetDir = executePostGenerationActions(version);
+            if (targetDir != null) {
+                showPostGenerationSuccess(version, targetDir, null);
+            }
         } catch (DateTimeParseException ex) {
             showInvalidDateDialog();
         }
@@ -307,10 +378,15 @@ public class Hello extends JFrame {
         try {
             LocalDate expirationDate = extractDate(v201View.expirationField);
             List<FeatureFlag> features = collectSelectedFeatures(v201View.checkBoxes);
-            String licenseKey = LicenseManager.generateLicenseKey(new LicenseRequest(expirationDate, version, features, null));
+            String company = v201View.companyField.getText();
+            String licenseKey = LicenseManager.generateLicenseKey(new LicenseRequest(expirationDate, version, features, company));
             v201View.licenseNumberField.setText(Objects.requireNonNullElse(LicenseManager.getLicenseCode(licenseKey), ""));
             v201View.licenseArea.setText(licenseKey);
             v201View.licenseArea.setCaretPosition(0);
+            Path targetDir = executePostGenerationActions(version);
+            if (targetDir != null) {
+                showPostGenerationSuccess(version, targetDir, null);
+            }
         } catch (DateTimeParseException ex) {
             showInvalidDateDialog();
         }
@@ -323,7 +399,8 @@ public class Hello extends JFrame {
         try {
             LocalDate expirationDate = extractDate(v211View.expirationField);
             List<FeatureFlag> features = collectSelectedFeatures(v211View.checkBoxes);
-            String licenseKey = LicenseManager.generateLicenseKey(new LicenseRequest(expirationDate, version, features, null));
+            String company = v211View.companyField.getText();
+            String licenseKey = LicenseManager.generateLicenseKey(new LicenseRequest(expirationDate, version, features, company));
             v211View.licenseNumberField.setText(Objects.requireNonNullElse(LicenseManager.getLicenseCode(licenseKey), ""));
 
             DriveItem selectedItem = (DriveItem) v211View.driveComboBox.getSelectedItem();
@@ -332,7 +409,13 @@ public class Hello extends JFrame {
                 return;
             }
             Path targetPath = writeLicenseToDrive(selectedItem.root, licenseKey);
-            JOptionPane.showMessageDialog(this, "Лицензия записана: " + targetPath, "Успех", JOptionPane.INFORMATION_MESSAGE);
+            String licenseInfo = "Лицензия записана: " + targetPath;
+            Path targetDir = executePostGenerationActions(version);
+            if (targetDir != null) {
+                showPostGenerationSuccess(version, targetDir, licenseInfo);
+            } else {
+                JOptionPane.showMessageDialog(this, licenseInfo, "Лицензия записана", JOptionPane.INFORMATION_MESSAGE);
+            }
             updateDriveList();
         } catch (DateTimeParseException ex) {
             showInvalidDateDialog();
@@ -411,27 +494,158 @@ public class Hello extends JFrame {
     }
 
     private void loadReadme(SoftwareVersion version) {
-        LegacyView view = legacyViews.get(version);
-        if (view == null) {
+        JTextArea readmeArea = findReadmeArea(version);
+        if (readmeArea == null) {
             return;
         }
         Path readmePath = Paths.get("versions", version.getFolderName(), "readme.txt");
+        if (!Files.exists(readmePath)) {
+            readmeArea.setText("Файл readme не найден: " + readmePath.toAbsolutePath());
+            readmeArea.setCaretPosition(0);
+            showReadmeWarning(version, "Файл readme не найден по пути:\n" + readmePath.toAbsolutePath());
+            return;
+        }
         try {
             String text = Files.readString(readmePath, StandardCharsets.UTF_8);
-            view.readmeArea.setText(text);
+            readmeArea.setText(text);
         } catch (MalformedInputException malformedInputException) {
             try {
                 String text = Files.readString(readmePath, Charset.defaultCharset());
-                view.readmeArea.setText(text);
+                readmeArea.setText(text);
             } catch (IOException ioException) {
-                view.readmeArea.setText("Не удалось загрузить readme: " + ioException.getMessage());
+                readmeArea.setText("Не удалось загрузить readme: " + ioException.getMessage());
+                readmeArea.setCaretPosition(0);
+                showReadmeError(version, "Не удалось загрузить readme: " + ioException.getMessage());
+                return;
             }
-            return;
         } catch (IOException e) {
-            view.readmeArea.setText("Не удалось загрузить readme: " + e.getMessage());
+            readmeArea.setText("Не удалось загрузить readme: " + e.getMessage());
+            readmeArea.setCaretPosition(0);
+            showReadmeError(version, "Не удалось загрузить readme: " + e.getMessage());
             return;
         }
-        view.readmeArea.setCaretPosition(0);
+        readmeArea.setCaretPosition(0);
+    }
+
+    private JTextArea findReadmeArea(SoftwareVersion version) {
+        if (legacyViews.containsKey(version)) {
+            LegacyView view = legacyViews.get(version);
+            return view != null ? view.readmeArea : null;
+        }
+        if (version == SoftwareVersion.V2_01 && v201View != null) {
+            return v201View.readmeArea;
+        }
+        if (version == SoftwareVersion.V2_11 && v211View != null) {
+            return v211View.readmeArea;
+        }
+        return null;
+    }
+
+    private void showReadmeWarning(SoftwareVersion version, String message) {
+        if (readmeWarningShown.add(version)) {
+            JOptionPane.showMessageDialog(this, message, "Readme недоступно", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void showReadmeError(SoftwareVersion version, String message) {
+        if (readmeWarningShown.add(version)) {
+            JOptionPane.showMessageDialog(this, message, "Ошибка чтения readme", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private Path executePostGenerationActions(SoftwareVersion version) {
+        Path root = Paths.get("").toAbsolutePath().normalize();
+        String dateSuffix = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String baseName = "FastMarking_" + dateSuffix;
+        Path targetDir = resolveUniqueDirectory(root, baseName);
+        try {
+            Files.createDirectories(targetDir);
+        } catch (AccessDeniedException e) {
+            showFileErrorDialog("Нет доступа к созданию папки:\n" + targetDir.toAbsolutePath());
+            return null;
+        } catch (IOException e) {
+            showFileErrorDialog("Не удалось создать папку:\n" + targetDir.toAbsolutePath() + "\n" + e.getMessage());
+            return null;
+        }
+
+        Path sourceExe = Paths.get("versions", version.getFolderName(), "FastMarking.exe");
+        if (!Files.exists(sourceExe)) {
+            showFileErrorDialog("Файл FastMarking.exe не найден:\n" + sourceExe.toAbsolutePath());
+            return null;
+        }
+
+        long requiredSpace;
+        try {
+            requiredSpace = Files.size(sourceExe);
+        } catch (IOException e) {
+            showFileErrorDialog("Не удалось получить информацию о FastMarking.exe:\n" + sourceExe.toAbsolutePath() + "\n" + e.getMessage());
+            return null;
+        }
+
+        try {
+            FileStore store = Files.getFileStore(targetDir);
+            if (store.getUsableSpace() < requiredSpace) {
+                showFileErrorDialog("Недостаточно места по пути:\n" + targetDir.toAbsolutePath());
+                return null;
+            }
+        } catch (IOException ignored) {
+            // Если не удалось определить доступное место, продолжим попытку копирования.
+        }
+
+        Path destination = targetDir.resolve("FastMarking.exe");
+        try {
+            Files.copy(sourceExe, destination, StandardCopyOption.REPLACE_EXISTING);
+        } catch (AccessDeniedException e) {
+            Path location = destination.getParent() != null ? destination.getParent() : destination;
+            showFileErrorDialog("Нет доступа для записи файла в:\n" + location.toAbsolutePath());
+            return null;
+        } catch (FileSystemException e) {
+            String reason = e.getReason();
+            Path location = destination.getParent() != null ? destination.getParent() : destination;
+            if (reason != null && reason.toLowerCase().contains("space")) {
+                showFileErrorDialog("Недостаточно места по пути:\n" + location.toAbsolutePath());
+            } else {
+                String detail = e.getMessage() != null ? e.getMessage() : "Ошибка файловой системы";
+                showFileErrorDialog("Ошибка файловой операции:\n" + destination.toAbsolutePath() + "\n" + detail);
+            }
+            return null;
+        } catch (IOException e) {
+            Path location = destination.getParent() != null ? destination.getParent() : destination;
+            showFileErrorDialog("Не удалось скопировать FastMarking.exe в:\n" + location.toAbsolutePath() + "\n" + e.getMessage());
+            return null;
+        }
+
+        return targetDir;
+    }
+
+    private Path resolveUniqueDirectory(Path root, String baseName) {
+        Path candidate = root.resolve(baseName);
+        int counter = 2;
+        while (Files.exists(candidate)) {
+            candidate = root.resolve(baseName + "_(" + counter + ")");
+            counter++;
+        }
+        return candidate;
+    }
+
+    private void showPostGenerationSuccess(SoftwareVersion version, Path targetDir, String additionalInfo) {
+        StringBuilder message = new StringBuilder();
+        if (additionalInfo != null && !additionalInfo.isBlank()) {
+            message.append(additionalInfo).append("\n\n");
+        }
+        message.append("Версия ").append(version.getFolderName()).append(" обработана.")
+                .append("\n")
+                .append("Создана папка: ").append(targetDir.toAbsolutePath())
+                .append("\n")
+                .append("FastMarking.exe скопирован.");
+        JOptionPane.showMessageDialog(this, message.toString(), "Успех", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void showFileErrorDialog(String message) {
+        JOptionPane.showMessageDialog(this,
+                message + "\nРекомендуется повторить операцию или проверить путь.",
+                "Ошибка файловой операции",
+                JOptionPane.ERROR_MESSAGE);
     }
 
     private GridBagConstraints createDefaultConstraints() {
@@ -541,6 +755,8 @@ public class Hello extends JFrame {
         JFormattedTextField expirationField;
         JTextField licenseNumberField;
         JTextArea licenseArea;
+        JTextArea readmeArea;
+        JTextField companyField;
         JButton generateButton;
         JButton selectAllButton;
         Map<FeatureFlag, JCheckBox> checkBoxes;
@@ -550,6 +766,8 @@ public class Hello extends JFrame {
         JPanel panel;
         JFormattedTextField expirationField;
         JTextField licenseNumberField;
+        JTextArea readmeArea;
+        JTextField companyField;
         JButton selectAllButton;
         Map<FeatureFlag, JCheckBox> checkBoxes;
         JComboBox<DriveItem> driveComboBox;
