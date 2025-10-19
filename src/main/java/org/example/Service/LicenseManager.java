@@ -6,6 +6,10 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 
+import com.auth0.jwt.JWTCreator;
+import org.example.FeatureFlag;
+import org.example.SoftwareVersion;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +19,7 @@ import java.nio.file.Paths;
 import java.security.Key;
 import java.time.LocalDate;
 import java.util.Base64;
+import java.util.List;
 import java.util.Random;
 
 public class LicenseManager {
@@ -28,12 +33,29 @@ public class LicenseManager {
 
     // Генерация лицензионного ключа
     public static String generateLicenseKey(LocalDate expirationDate) {
+        return generateLicenseKey(new LicenseRequest(expirationDate, SoftwareVersion.V1_01, List.of(), null));
+    }
+
+    public static String generateLicenseKey(LicenseRequest request) {
         System.out.println("[INFO] Генерация лицензионного ключа...");
         String code = generateRandomCode(8); // Генерируем код
-        String licenseKey = JWT.create()
-                .withClaim("expiration", expirationDate.toString())
-                .withClaim("code", code) // Добавляем код в JWT
-                .sign(JWT_ALGORITHM);
+        JWTCreator.Builder builder = JWT.create()
+                .withClaim("expiration", request.expirationDate().toString())
+                .withClaim("code", code)
+                .withClaim("version", request.version().getCode());
+
+        if (request.company() != null) {
+            builder.withClaim("company", request.company());
+        }
+
+        if (!request.features().isEmpty()) {
+            String[] features = request.features().stream()
+                    .map(FeatureFlag::name)
+                    .toArray(String[]::new);
+            builder.withArrayClaim("features", features);
+        }
+
+        String licenseKey = builder.sign(JWT_ALGORITHM);
         System.out.println("[INFO] Лицензионный ключ успешно сгенерирован: " + licenseKey);
         return licenseKey;
     }
