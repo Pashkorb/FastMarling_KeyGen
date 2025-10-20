@@ -550,16 +550,9 @@ public class Hello extends JFrame {
             var parts = disk.getPartitions();
             if (parts != null) {
                 for (var p : parts) {
-                    var mps = p.getMountPoints();
-                    if (mps != null) {
-                        for (String mp : mps) {
-                            if (mount.equalsIgnoreCase(mp)) {
-                                matchesThisDisk = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (matchesThisDisk) {
+                    String mp = p.getMountPoint();
+                    if (mp != null && mount.equalsIgnoreCase(mp)) {
+                        matchesThisDisk = true;
                         break;
                     }
                 }
@@ -568,9 +561,8 @@ public class Hello extends JFrame {
             if (matchesThisDisk) {
                 hwSerial = nz(disk.getSerial());
                 hwSize = disk.getSize();
-                String iface = nz(disk.getInterfaceType()).toLowerCase(Locale.ROOT);
                 String model = nz(disk.getModel()).toLowerCase(Locale.ROOT);
-                removable = iface.contains("usb") || model.contains("usb");
+                removable = model.contains("usb");
                 break;
             }
         }
