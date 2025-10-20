@@ -467,7 +467,8 @@ public class Hello extends JFrame {
             logUsb("Носитель для записи не передан");
             throw new IOException("Носитель не выбран");
         }
-        if (!drive.exists()) {
+        drive = normalizeDriveRoot(drive);
+        if (!driveExists(drive)) {
             logUsb("Носитель не найден по пути: %s", drive.getAbsolutePath());
             throw new IOException("Носитель недоступен: " + drive.getAbsolutePath());
         }
@@ -502,7 +503,8 @@ public class Hello extends JFrame {
 
     private UsbDeviceInfo readUsbDeviceInfo(File drive) throws DeviceInfoException {
         logUsb("Чтение аппаратной информации о носителе: %s", drive);
-        if (drive == null || !drive.exists()) {
+        drive = normalizeDriveRoot(drive);
+        if (drive == null || !driveExists(drive)) {
             logUsb("Носитель отсутствует или недоступен при попытке чтения информации");
             throw new DeviceInfoException("Невозможно создать лицензию: устройство не подходит.");
         }
@@ -732,6 +734,48 @@ public class Hello extends JFrame {
         }
         logUsb("Сканирование съёмных носителей завершено, итоговое количество: %d", result.size());
         return result;
+    }
+
+    private File normalizeDriveRoot(File drive) {
+        if (drive == null) {
+            return null;
+        }
+        String absolutePath = drive.getAbsolutePath();
+        if (absolutePath == null || absolutePath.isBlank()) {
+            return drive;
+        }
+        File normalized = new File(absolutePath);
+        if (!drive.equals(normalized)) {
+            logUsb("Носитель преобразован к обычному пути: %s", absolutePath);
+        }
+        return normalized;
+    }
+
+    private boolean driveExists(File drive) {
+        if (drive == null) {
+            return false;
+        }
+        if (drive.exists()) {
+            return true;
+        }
+        String absolutePath = drive.getAbsolutePath();
+        if (absolutePath == null || absolutePath.isBlank()) {
+            return false;
+        }
+        File[] roots = File.listRoots();
+        if (roots == null) {
+            return false;
+        }
+        for (File root : roots) {
+            if (root == null) {
+                continue;
+            }
+            String rootPath = root.getAbsolutePath();
+            if (rootPath != null && rootPath.equalsIgnoreCase(absolutePath)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void logUsb(String message, Object... args) {
