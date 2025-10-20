@@ -35,6 +35,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -598,22 +599,32 @@ public class Hello extends JFrame {
     }
 
     private String buildDeviceInfoScript(String driveId) {
-        return "[Console]::OutputEncoding=[System.Text.Encoding]::UTF8; " +
-                "$drive = Get-CimInstance Win32_LogicalDisk -Filter \"DeviceID='" + driveId + "'\"; " +
-                "if ($drive -eq $null) { exit 1 }; " +
-                "$partition = $drive | Get-CimAssociatedInstance -ResultClassName Win32_DiskPartition; " +
-                "if ($partition -eq $null) { exit 2 }; " +
-                "$disk = $partition | Get-CimAssociatedInstance -ResultClassName Win32_DiskDrive; " +
-                "if ($disk -eq $null) { exit 3 }; " +
-                "Write-Output ('SerialNumber=' + ($disk.SerialNumber -as [string])); " +
-                "Write-Output ('Size=' + ($disk.Size -as [string])); " +
-                "Write-Output ('DeviceID=' + ($disk.DeviceID -as [string])); " +
-                "Write-Output ('DriveType=' + ($drive.DriveType -as [string]));";
+        return ("""
+                [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+                $filter = "DeviceID='%s'"
+                $drive = Get-CimInstance Win32_LogicalDisk -Filter $filter
+                if ($drive -eq $null) { exit 1 }
+                $partition = $drive | Get-CimAssociatedInstance -ResultClassName Win32_DiskPartition
+                if ($partition -eq $null) { exit 2 }
+                $disk = $partition | Get-CimAssociatedInstance -ResultClassName Win32_DiskDrive
+                if ($disk -eq $null) { exit 3 }
+                Write-Output ('SerialNumber=' + ($disk.SerialNumber -as [string]))
+                Write-Output ('Size=' + ($disk.Size -as [string]))
+                Write-Output ('DeviceID=' + ($disk.DeviceID -as [string]))
+                Write-Output ('DriveType=' + ($drive.DriveType -as [string]))
+                """).formatted(driveId);
     }
 
     private CommandResult runPowerShell(String script) throws IOException {
-        logUsb("Запуск PowerShell с командой: %s", script);
-        ProcessBuilder builder = new ProcessBuilder("powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script);
+        logUsb("Запуск PowerShell с -EncodedCommand. Исходный скрипт: %s", script.replace("\n", "\\n"));
+        String encodedCommand = Base64.getEncoder().encodeToString(script.getBytes(StandardCharsets.UTF_16LE));
+        ProcessBuilder builder = new ProcessBuilder(
+                "powershell.exe",
+                "-NoProfile",
+                "-NonInteractive",
+                "-EncodedCommand",
+                encodedCommand
+        );
         builder.redirectErrorStream(true);
         Process process = builder.start();
         List<String> lines = new ArrayList<>();
