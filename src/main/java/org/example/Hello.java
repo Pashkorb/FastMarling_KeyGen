@@ -54,6 +54,8 @@ public class Hello extends JFrame {
     private static final String LICENSE_FILE_NAME = "fastmarking_license.jwt";
     private JPanel mainPanel;
 
+    private static final String USB_LOG_PREFIX = "[USB] ";
+
     private final EnumMap<SoftwareVersion, LegacyView> legacyViews = new EnumMap<>(SoftwareVersion.class);
     private final EnumSet<SoftwareVersion> readmeWarningShown = EnumSet.noneOf(SoftwareVersion.class);
     private FeatureVersionView v201View;
@@ -406,13 +408,17 @@ public class Hello extends JFrame {
             LocalDate expirationDate = extractDate(v211View.expirationField);
             List<FeatureFlag> features = collectSelectedFeatures(v211View.checkBoxes);
             String company = v211View.companyField.getText();
+            logUsb("Запуск генерации лицензии для версии %s", version.getDisplayName());
             DriveItem selectedItem = (DriveItem) v211View.driveComboBox.getSelectedItem();
             if (selectedItem == null || selectedItem.root == null) {
+                logUsb("Носитель не выбран пользователем");
                 JOptionPane.showMessageDialog(this, "Выберите флешку для записи.", "Нет носителя", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+            logUsb("Выбран носитель: %s (%s)", selectedItem.displayName, selectedItem.root.getAbsolutePath());
             UsbDeviceInfo deviceInfo = readUsbDeviceInfo(selectedItem.root);
             if (deviceInfo.removable != null && !deviceInfo.removable) {
+                logUsb("Носитель %s помечен как не съёмный", selectedItem.root.getAbsolutePath());
                 JOptionPane.showMessageDialog(this,
                         "Выбрано не съёмное устройство. Нужна именно USB-флешка.",
                         "Неверный носитель",
@@ -421,12 +427,14 @@ public class Hello extends JFrame {
             }
 
             String deviceFingerprint = computeDeviceFingerprint(deviceInfo);
+            logUsb("Для носителя %s вычислен отпечаток устройства: %s", selectedItem.root.getAbsolutePath(), deviceFingerprint);
             String licenseKey = LicenseManager.generateLicenseKey(
                     new LicenseRequest(expirationDate, version, features, company, deviceFingerprint));
             v211View.licenseNumberField.setText(Objects.requireNonNullElse(LicenseManager.getLicenseCode(licenseKey), ""));
 
             Path targetPath = writeLicenseToDrive(selectedItem.root, licenseKey);
             if (targetPath == null) {
+                logUsb("Запись лицензии отменена пользователем или не требуется (носитель: %s)", selectedItem.root.getAbsolutePath());
                 return;
             }
 
@@ -440,72 +448,96 @@ public class Hello extends JFrame {
                         "Лицензия записана",
                         JOptionPane.INFORMATION_MESSAGE);
             }
+            logUsb("Запись лицензии завершена: файл %s", targetPath);
             updateDriveList();
         } catch (DateTimeParseException ex) {
             showInvalidDateDialog();
         } catch (DeviceInfoException ex) {
+            logUsb("Ошибка получения данных устройства: %s", ex.getMessage());
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Ошибка устройства", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
+            logUsb("Ошибка записи лицензии: %s", ex.getMessage());
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Ошибка записи", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private Path writeLicenseToDrive(File drive, String licenseKey) throws IOException {
+        logUsb("Начало записи лицензии на носитель: %s", drive);
         if (drive == null) {
+            logUsb("Носитель для записи не передан");
             throw new IOException("Носитель не выбран");
         }
         if (!drive.exists()) {
+            logUsb("Носитель не найден по пути: %s", drive.getAbsolutePath());
             throw new IOException("Носитель недоступен: " + drive.getAbsolutePath());
         }
         if (!drive.canWrite()) {
+            logUsb("Нет прав на запись в корень носителя: %s", drive.getAbsolutePath());
             throw new IOException("Нет доступа для записи на: " + drive.getAbsolutePath());
         }
         long requiredSpace = licenseKey.getBytes(StandardCharsets.UTF_8).length;
+        logUsb("Требуемый объём для записи лицензии: %d байт", requiredSpace);
         if (drive.getUsableSpace() < requiredSpace) {
+            logUsb("На носителе %s недостаточно свободного места: доступно %d байт", drive.getAbsolutePath(), drive.getUsableSpace());
             throw new IOException("Недостаточно свободного места на носителе");
         }
         Path target = drive.toPath().resolve(LICENSE_FILE_NAME);
+        logUsb("Целевой путь записи лицензии: %s", target);
         if (Files.exists(target)) {
+            logUsb("Файл лицензии уже существует и требует подтверждения перезаписи: %s", target);
             int choice = JOptionPane.showConfirmDialog(this,
                     "Файл " + LICENSE_FILE_NAME + " уже существует на выбранной флешке. Перезаписать?",
                     "Подтверждение перезаписи",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (choice != JOptionPane.YES_OPTION) {
+                logUsb("Пользователь отказался перезаписывать существующий файл: %s", target);
                 return null;
             }
         }
         Files.writeString(target, licenseKey, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        logUsb("Лицензия успешно записана на носитель: %s", target);
         return target;
     }
 
     private UsbDeviceInfo readUsbDeviceInfo(File drive) throws DeviceInfoException {
+        logUsb("Чтение аппаратной информации о носителе: %s", drive);
         if (drive == null || !drive.exists()) {
+            logUsb("Носитель отсутствует или недоступен при попытке чтения информации");
             throw new DeviceInfoException("Невозможно создать лицензию: устройство не подходит.");
         }
         boolean isWindows = System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win");
         if (!isWindows) {
+            logUsb("ОС не Windows, получение уникальных данных невозможно");
             throw new DeviceInfoException("Невозможно создать лицензию: устройство не имеет уникальных аппаратных данных (флешка не подходит).");
         }
 
         String rootPath = drive.getAbsolutePath();
         if (rootPath == null || rootPath.length() < 2) {
+            logUsb("Корневой путь носителя некорректен: %s", rootPath);
             throw new DeviceInfoException("Невозможно создать лицензию: устройство не подходит.");
         }
         String driveId = rootPath.substring(0, 2).toUpperCase(Locale.ROOT);
+        logUsb("Определён идентификатор диска: %s", driveId);
 
         CommandResult result;
         try {
-            result = runPowerShell(buildDeviceInfoScript(driveId));
+            String script = buildDeviceInfoScript(driveId);
+            logUsb("Выполнение PowerShell-скрипта для чтения параметров: %s", script);
+            result = runPowerShell(script);
         } catch (IOException e) {
+            logUsb("Не удалось выполнить PowerShell-скрипт: %s", e.getMessage());
             throw new DeviceInfoException("Невозможно создать лицензию: устройство не подходит.", e);
         }
 
+        logUsb("PowerShell завершился с кодом %d и строками: %s", result.exitCode, String.join(", ", result.lines));
         if (result.exitCode != 0) {
+            logUsb("PowerShell вернул ошибку при чтении сведений о носителе");
             throw new DeviceInfoException("Невозможно создать лицензию: устройство не подходит.");
         }
 
         Map<String, String> values = parseKeyValueLines(result.lines);
+        logUsb("Распознанные параметры устройства: %s", values);
         String serial = values.get("SerialNumber");
         if (serial != null) {
             serial = serial.trim();
@@ -514,6 +546,7 @@ public class Hello extends JFrame {
             }
         }
         if (serial == null || serial.isBlank()) {
+            logUsb("Серийный номер не найден среди параметров устройства");
             throw new DeviceInfoException("Невозможно определить аппаратный серийный номер флешки.");
         }
 
@@ -522,6 +555,7 @@ public class Hello extends JFrame {
             sizeValue = sizeValue.trim();
         }
         if (sizeValue == null || sizeValue.isBlank()) {
+            logUsb("Значение размера носителя отсутствует или пустое");
             throw new DeviceInfoException("Невозможно прочитать размер или количество секторов устройства.");
         }
 
@@ -529,15 +563,18 @@ public class Hello extends JFrame {
         try {
             capacity = Long.parseLong(sizeValue);
         } catch (NumberFormatException e) {
+            logUsb("Размер носителя не удалось преобразовать к числу: %s", sizeValue);
             throw new DeviceInfoException("Невозможно прочитать размер или количество секторов устройства.");
         }
 
         if (capacity <= 0) {
+            logUsb("Размер носителя некорректен: %d", capacity);
             throw new DeviceInfoException("Невозможно создать лицензию: устройство не имеет уникальных аппаратных данных (флешка не подходит).");
         }
 
         long sectors = capacity / 512L;
         if (sectors <= 0) {
+            logUsb("Количество секторов некорректно: %d", sectors);
             throw new DeviceInfoException("Невозможно прочитать размер или количество секторов устройства.");
         }
 
@@ -547,11 +584,14 @@ public class Hello extends JFrame {
             try {
                 int driveType = Integer.parseInt(driveTypeValue.trim());
                 removable = driveType == 2;
+                logUsb("Тип устройства (%s) интерпретирован как съёмный=%s", driveTypeValue, removable);
             } catch (NumberFormatException ignored) {
+                logUsb("Не удалось разобрать тип устройства: %s", driveTypeValue);
                 // Игнорируем некорректное значение типа диска.
             }
         }
 
+        logUsb("Чтение параметров завершено: serial=%s, capacity=%d, sectors=%d, removable=%s", serial, capacity, sectors, removable);
         return new UsbDeviceInfo(serial, capacity, sectors, removable);
     }
 
@@ -570,6 +610,7 @@ public class Hello extends JFrame {
     }
 
     private CommandResult runPowerShell(String script) throws IOException {
+        logUsb("Запуск PowerShell с командой: %s", script);
         ProcessBuilder builder = new ProcessBuilder("powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script);
         builder.redirectErrorStream(true);
         Process process = builder.start();
@@ -579,6 +620,7 @@ public class Hello extends JFrame {
             while ((line = reader.readLine()) != null) {
                 String trimmed = line.trim();
                 if (!trimmed.isEmpty()) {
+                    logUsb("PowerShell вывод: %s", trimmed);
                     lines.add(trimmed);
                 }
             }
@@ -588,21 +630,26 @@ public class Hello extends JFrame {
             exitCode = process.waitFor();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            logUsb("Выполнение PowerShell было прервано: %s", e.getMessage());
             throw new IOException("PowerShell command interrupted", e);
         }
+        logUsb("PowerShell завершил работу с кодом: %d", exitCode);
         return new CommandResult(exitCode, lines);
     }
 
     private Map<String, String> parseKeyValueLines(List<String> lines) {
+        logUsb("Парсинг строк вывода PowerShell: %s", lines);
         Map<String, String> values = new HashMap<>();
         for (String line : lines) {
             int delimiterIndex = line.indexOf('=');
             if (delimiterIndex <= 0) {
+                logUsb("Строка без разделителя '=' пропущена: %s", line);
                 continue;
             }
             String key = line.substring(0, delimiterIndex).trim();
             String value = line.substring(delimiterIndex + 1).trim();
             if (!key.isEmpty()) {
+                logUsb("Распознан параметр: %s=%s", key, value);
                 values.put(key, value);
             }
         }
@@ -610,6 +657,7 @@ public class Hello extends JFrame {
     }
 
     private String computeDeviceFingerprint(UsbDeviceInfo info) {
+        logUsb("Вычисление отпечатка устройства для serial=%s, capacity=%d, sectors=%d", info.serial, info.capacity, info.sectors);
         String raw = info.serial + "|" + info.capacity + "|" + info.sectors;
         MessageDigest digest;
         try {
@@ -622,6 +670,7 @@ public class Hello extends JFrame {
         for (byte b : hash) {
             sb.append(String.format(Locale.ROOT, "%02x", b));
         }
+        logUsb("Отпечаток устройства вычислен: %s", sb);
         return sb.toString();
     }
 
@@ -630,6 +679,7 @@ public class Hello extends JFrame {
             return;
         }
         List<DriveItem> drives = detectRemovableDrives();
+        logUsb("Обновление списка носителей, найдено: %d", drives.size());
         DefaultComboBoxModel<DriveItem> model = new DefaultComboBoxModel<>();
         for (DriveItem drive : drives) {
             model.addElement(drive);
@@ -646,33 +696,50 @@ public class Hello extends JFrame {
 
     private List<DriveItem> detectRemovableDrives() {
         List<DriveItem> result = new ArrayList<>();
+        logUsb("Начало сканирования съёмных носителей");
         File[] roots = File.listRoots();
         if (roots == null) {
+            logUsb("File.listRoots() вернул null — носители недоступны");
             return result;
         }
         FileSystemView fileSystemView = FileSystemView.getFileSystemView();
         boolean isWindows = System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win");
         for (File root : roots) {
+            logUsb("Обработка корня: %s", root);
             if (!fileSystemView.isDrive(root)) {
+                logUsb("Корень %s не распознан как диск и пропускается", root);
                 continue;
             }
             String description = fileSystemView.getSystemTypeDescription(root);
+            logUsb("Описание носителя %s: %s", root, description);
             boolean removable = description != null && (description.toLowerCase().contains("removable")
                     || description.contains("Съемный")
                     || description.contains("Съёмный"));
             if (!removable && isWindows && root.getPath().equalsIgnoreCase("C:\\")) {
+                logUsb("Системный диск Windows C:\\ пропущен");
                 continue;
             }
             if (!removable && !isWindows) {
+                logUsb("Диск %s не определён как съёмный в не-Windows среде", root);
                 continue;
             }
             String displayName = fileSystemView.getSystemDisplayName(root);
             if (displayName == null || displayName.isBlank()) {
                 displayName = root.getPath();
             }
+            logUsb("Добавлен носитель: %s (%s)", root, displayName.trim());
             result.add(new DriveItem(root, displayName.trim()));
         }
+        logUsb("Сканирование съёмных носителей завершено, итоговое количество: %d", result.size());
         return result;
+    }
+
+    private void logUsb(String message, Object... args) {
+        if (args == null || args.length == 0) {
+            System.out.println(USB_LOG_PREFIX + message);
+            return;
+        }
+        System.out.println(USB_LOG_PREFIX + String.format(Locale.ROOT, message, args));
     }
 
     private void loadReadme(SoftwareVersion version) {
