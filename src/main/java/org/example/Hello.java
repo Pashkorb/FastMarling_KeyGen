@@ -550,13 +550,10 @@ public class Hello extends JFrame {
             var parts = disk.getPartitions();
             if (parts != null) {
                 for (var p : parts) {
-                    var mps = p.getMountPoints();
-                    if (mps != null) {
-                        for (String mp : mps) {
-                            if (mount.equalsIgnoreCase(mp)) {
-                                matchesThisDisk = true;
-                                break;
-                            }
+                    for (String mp : extractMountPoints(p)) {
+                        if (mount.equalsIgnoreCase(mp)) {
+                            matchesThisDisk = true;
+                            break;
                         }
                     }
                     if (matchesThisDisk) {
@@ -568,9 +565,10 @@ public class Hello extends JFrame {
             if (matchesThisDisk) {
                 hwSerial = nz(disk.getSerial());
                 hwSize = disk.getSize();
-                String iface = nz(disk.getInterfaceType()).toLowerCase(Locale.ROOT);
+                String iface = nz(extractInterfaceType(disk)).toLowerCase(Locale.ROOT);
                 String model = nz(disk.getModel()).toLowerCase(Locale.ROOT);
-                removable = iface.contains("usb") || model.contains("usb");
+                String name = nz(disk.getName()).toLowerCase(Locale.ROOT);
+                removable = iface.contains("usb") || model.contains("usb") || name.contains("usb");
                 break;
             }
         }
@@ -598,6 +596,52 @@ public class Hello extends JFrame {
 
         logUsb("Чтение параметров завершено: serial=%s, capacity=%d, sectors=%d, removable=%s", hwSerial, capacity, sectors, removable);
         return new UsbDeviceInfo(hwSerial, capacity, sectors, removable);
+    }
+
+    private List<String> extractMountPoints(oshi.hardware.HWPartition partition) {
+        if (partition == null) {
+            return List.of();
+        }
+        try {
+            Object result = partition.getClass().getMethod("getMountPoints").invoke(partition);
+            if (result instanceof Iterable<?>) {
+                List<String> mountPoints = new ArrayList<>();
+                for (Object item : (Iterable<?>) result) {
+                    if (item instanceof String mp && !mp.isBlank()) {
+                        mountPoints.add(mp);
+                    }
+                }
+                if (!mountPoints.isEmpty()) {
+                    return mountPoints;
+                }
+            }
+        } catch (NoSuchMethodException ignored) {
+            // Метод недоступен в старых версиях OSHI
+        } catch (ReflectiveOperationException ignored) {
+            // Ошибка при вызове метода — используем запасной вариант
+        }
+        String mountPoint = partition.getMountPoint();
+        if (mountPoint == null || mountPoint.isBlank()) {
+            return List.of();
+        }
+        return List.of(mountPoint);
+    }
+
+    private String extractInterfaceType(oshi.hardware.HWDiskStore disk) {
+        if (disk == null) {
+            return "";
+        }
+        try {
+            Object result = disk.getClass().getMethod("getInterfaceType").invoke(disk);
+            if (result instanceof String s) {
+                return s;
+            }
+        } catch (NoSuchMethodException ignored) {
+            // Метод доступен не во всех версиях OSHI
+        } catch (ReflectiveOperationException ignored) {
+            // Ошибка при вызове метода — возвращаем пустую строку
+        }
+        return "";
     }
 
     private static String nz(String s) {
