@@ -13,10 +13,8 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
@@ -32,13 +30,11 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -506,167 +502,106 @@ public class Hello extends JFrame {
         logUsb("Чтение аппаратной информации о носителе: %s", drive);
         drive = normalizeDriveRoot(drive);
         if (drive == null || !driveExists(drive)) {
-            logUsb("Носитель отсутствует или недоступен при попытке чтения информации");
             throw new DeviceInfoException("Невозможно создать лицензию: устройство не подходит.");
         }
+
         boolean isWindows = System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win");
         if (!isWindows) {
-            logUsb("ОС не Windows, получение уникальных данных невозможно");
             throw new DeviceInfoException("Невозможно создать лицензию: устройство не имеет уникальных аппаратных данных (флешка не подходит).");
         }
 
-        String rootPath = drive.getAbsolutePath();
-        if (rootPath == null || rootPath.length() < 2) {
-            logUsb("Корневой путь носителя некорректен: %s", rootPath);
-            throw new DeviceInfoException("Невозможно создать лицензию: устройство не подходит.");
-        }
-        String driveId = rootPath.substring(0, 2).toUpperCase(Locale.ROOT);
-        logUsb("Определён идентификатор диска: %s", driveId);
-
-        CommandResult result;
-        try {
-            String script = buildDeviceInfoScript(driveId);
-            logUsb("Выполнение PowerShell-скрипта для чтения параметров: %s", script);
-            result = runPowerShell(script);
-        } catch (IOException e) {
-            logUsb("Не удалось выполнить PowerShell-скрипт: %s", e.getMessage());
-            throw new DeviceInfoException("Невозможно создать лицензию: устройство не подходит.", e);
-        }
-
-        logUsb("PowerShell завершился с кодом %d и строками: %s", result.exitCode, String.join(", ", result.lines));
-        if (result.exitCode != 0) {
-            logUsb("PowerShell вернул ошибку при чтении сведений о носителе");
-            throw new DeviceInfoException("Невозможно создать лицензию: устройство не подходит.");
-        }
-
-        Map<String, String> values = parseKeyValueLines(result.lines);
-        logUsb("Распознанные параметры устройства: %s", values);
-        String serial = values.get("SerialNumber");
-        if (serial != null) {
-            serial = serial.trim();
-            if (!serial.isEmpty()) {
-                serial = serial.toUpperCase(Locale.ROOT);
-            }
-        }
-        if (serial == null || serial.isBlank()) {
-            logUsb("Серийный номер не найден среди параметров устройства");
+        UsbDeviceInfo info = readUsbDeviceInfoWithOshi(drive);
+        if (info.serial == null || info.serial.isBlank()) {
             throw new DeviceInfoException("Невозможно определить аппаратный серийный номер флешки.");
         }
-
-        String sizeValue = values.get("Size");
-        if (sizeValue != null) {
-            sizeValue = sizeValue.trim();
-        }
-        if (sizeValue == null || sizeValue.isBlank()) {
-            logUsb("Значение размера носителя отсутствует или пустое");
+        if (info.capacity <= 0 || info.sectors <= 0) {
             throw new DeviceInfoException("Невозможно прочитать размер или количество секторов устройства.");
         }
+        return info;
+    }
 
-        long capacity;
-        try {
-            capacity = Long.parseLong(sizeValue);
-        } catch (NumberFormatException e) {
-            logUsb("Размер носителя не удалось преобразовать к числу: %s", sizeValue);
-            throw new DeviceInfoException("Невозможно прочитать размер или количество секторов устройства.");
+    private UsbDeviceInfo readUsbDeviceInfoWithOshi(File drive) throws DeviceInfoException {
+        final String mount = drive.getAbsolutePath().toUpperCase(Locale.ROOT);
+        if (mount.length() < 2) {
+            throw new DeviceInfoException("Невозможно создать лицензию: устройство не подходит.");
         }
 
-        if (capacity <= 0) {
-            logUsb("Размер носителя некорректен: %d", capacity);
-            throw new DeviceInfoException("Невозможно создать лицензию: устройство не имеет уникальных аппаратных данных (флешка не подходит).");
-        }
+        oshi.SystemInfo si = new oshi.SystemInfo();
+        var hal = si.getHardware();
+        var fs = si.getOperatingSystem().getFileSystem();
 
-        long sectors = capacity / 512L;
-        if (sectors <= 0) {
-            logUsb("Количество секторов некорректно: %d", sectors);
-            throw new DeviceInfoException("Невозможно прочитать размер или количество секторов устройства.");
-        }
-
-        Boolean removable = null;
-        String driveTypeValue = values.get("DriveType");
-        if (driveTypeValue != null && !driveTypeValue.isBlank()) {
-            try {
-                int driveType = Integer.parseInt(driveTypeValue.trim());
-                removable = driveType == 2;
-                logUsb("Тип устройства (%s) интерпретирован как съёмный=%s", driveTypeValue, removable);
-            } catch (NumberFormatException ignored) {
-                logUsb("Не удалось разобрать тип устройства: %s", driveTypeValue);
-                // Игнорируем некорректное значение типа диска.
+        oshi.software.os.OSFileStore targetStore = null;
+        for (var store : fs.getFileStores()) {
+            if (mount.equalsIgnoreCase(store.getMount())) {
+                targetStore = store;
+                break;
             }
         }
+        if (targetStore == null) {
+            throw new DeviceInfoException("Не удалось найти файловый том для " + mount);
+        }
 
-        logUsb("Чтение параметров завершено: serial=%s, capacity=%d, sectors=%d, removable=%s", serial, capacity, sectors, removable);
-        return new UsbDeviceInfo(serial, capacity, sectors, removable);
-    }
+        String hwSerial = null;
+        Long hwSize = null;
+        Boolean removable = null;
 
-    private String buildDeviceInfoScript(String driveId) {
-        return ("""
-                [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-                $filter = "DeviceID='%s'"
-                $drive = Get-CimInstance Win32_LogicalDisk -Filter $filter
-                if ($drive -eq $null) { exit 1 }
-                $partition = $drive | Get-CimAssociatedInstance -ResultClassName Win32_DiskPartition
-                if ($partition -eq $null) { exit 2 }
-                $disk = $partition | Get-CimAssociatedInstance -ResultClassName Win32_DiskDrive
-                if ($disk -eq $null) { exit 3 }
-                Write-Output ('SerialNumber=' + ($disk.SerialNumber -as [string]))
-                Write-Output ('Size=' + ($disk.Size -as [string]))
-                Write-Output ('DeviceID=' + ($disk.DeviceID -as [string]))
-                Write-Output ('DriveType=' + ($drive.DriveType -as [string]))
-                """).formatted(driveId);
-    }
-
-    private CommandResult runPowerShell(String script) throws IOException {
-        logUsb("Запуск PowerShell с -EncodedCommand. Исходный скрипт: %s", script.replace("\n", "\\n"));
-        String encodedCommand = Base64.getEncoder().encodeToString(script.getBytes(StandardCharsets.UTF_16LE));
-        ProcessBuilder builder = new ProcessBuilder(
-                "powershell.exe",
-                "-NoProfile",
-                "-NonInteractive",
-                "-EncodedCommand",
-                encodedCommand
-        );
-        builder.redirectErrorStream(true);
-        Process process = builder.start();
-        List<String> lines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String trimmed = line.trim();
-                if (!trimmed.isEmpty()) {
-                    logUsb("PowerShell вывод: %s", trimmed);
-                    lines.add(trimmed);
+        for (var disk : hal.getDiskStores()) {
+            boolean matchesThisDisk = false;
+            var parts = disk.getPartitions();
+            if (parts != null) {
+                for (var p : parts) {
+                    var mps = p.getMountPoints();
+                    if (mps != null) {
+                        for (String mp : mps) {
+                            if (mount.equalsIgnoreCase(mp)) {
+                                matchesThisDisk = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (matchesThisDisk) {
+                        break;
+                    }
                 }
             }
+
+            if (matchesThisDisk) {
+                hwSerial = nz(disk.getSerial());
+                hwSize = disk.getSize();
+                String iface = nz(disk.getInterfaceType()).toLowerCase(Locale.ROOT);
+                String model = nz(disk.getModel()).toLowerCase(Locale.ROOT);
+                removable = iface.contains("usb") || model.contains("usb");
+                break;
+            }
         }
-        int exitCode;
-        try {
-            exitCode = process.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logUsb("Выполнение PowerShell было прервано: %s", e.getMessage());
-            throw new IOException("PowerShell command interrupted", e);
+
+        if (hwSerial == null) {
+            String volSerial = nz(targetStore.getVolume());
+            if (volSerial.isEmpty()) {
+                volSerial = nz(targetStore.getUUID());
+            }
+            if (volSerial.isEmpty()) {
+                throw new DeviceInfoException("Не удалось определить серийный номер носителя.");
+            }
+            hwSerial = volSerial;
+            hwSize = targetStore.getTotalSpace();
+
+            String desc = nz(targetStore.getDescription());
+            String type = nz(targetStore.getType());
+            String both = (desc + " " + type).toLowerCase(Locale.ROOT);
+            removable = both.contains("removable") || both.contains("съем") || both.contains("съём");
         }
-        logUsb("PowerShell завершил работу с кодом: %d", exitCode);
-        return new CommandResult(exitCode, lines);
+
+        hwSerial = hwSerial.trim().toUpperCase(Locale.ROOT);
+        long capacity = hwSize != null ? hwSize : 0L;
+        long sectors = capacity / 512L;
+
+        logUsb("Чтение параметров завершено: serial=%s, capacity=%d, sectors=%d, removable=%s", hwSerial, capacity, sectors, removable);
+        return new UsbDeviceInfo(hwSerial, capacity, sectors, removable);
     }
 
-    private Map<String, String> parseKeyValueLines(List<String> lines) {
-        logUsb("Парсинг строк вывода PowerShell: %s", lines);
-        Map<String, String> values = new HashMap<>();
-        for (String line : lines) {
-            int delimiterIndex = line.indexOf('=');
-            if (delimiterIndex <= 0) {
-                logUsb("Строка без разделителя '=' пропущена: %s", line);
-                continue;
-            }
-            String key = line.substring(0, delimiterIndex).trim();
-            String value = line.substring(delimiterIndex + 1).trim();
-            if (!key.isEmpty()) {
-                logUsb("Распознан параметр: %s=%s", key, value);
-                values.put(key, value);
-            }
-        }
-        return values;
+    private static String nz(String s) {
+        return s == null ? "" : s;
     }
 
     private String computeDeviceFingerprint(UsbDeviceInfo info) {
@@ -1089,16 +1024,6 @@ public class Hello extends JFrame {
             this.capacity = capacity;
             this.sectors = sectors;
             this.removable = removable;
-        }
-    }
-
-    private static class CommandResult {
-        final int exitCode;
-        final List<String> lines;
-
-        CommandResult(int exitCode, List<String> lines) {
-            this.exitCode = exitCode;
-            this.lines = List.copyOf(lines);
         }
     }
 
